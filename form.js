@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const querystring = require('querystring');
 
 http.createServer((req, res) => {
 
@@ -17,9 +18,37 @@ http.createServer((req, res) => {
             res.write(data);
         }
         else if (req.url == '/submit') {
-            res.write("<h1> Data submitted </h1>")
+            let dataBody =[];
+            req.on('data', (chunk) => {
+                dataBody.push(chunk);
+            });
+            req.on('end', () => {
+                let body = Buffer.concat(dataBody).toString();
+                let readableData = querystring.parse(body);
+                let dataString = "My name is " + readableData.name + " and my email is " + readableData.email + 
+                " and my number is " + readableData.number;
+                console.log(dataString);
+
+
+                // Synchronous method
+                //fs.writeFileSync("text/" + readableData.name + ".txt", dataString);
+                //console.log("file created");
+
+
+                // Asynchronous method
+                fs.writeFile("text/" + readableData.name + ".txt", dataString, (err) => {
+                    if (err) {
+                        console.log("error in file creation");
+                        return false;
+                    }
+                    else {
+                        console.log("file created");
+                    }
+                });
+            })
+             res.write("<h1> Data submitted </h1>")
         }
-        res.end("")
+        res.end()
     })
     
     }).listen(6500)
