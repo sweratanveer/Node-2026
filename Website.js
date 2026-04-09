@@ -6,7 +6,7 @@ http.createServer((req, res) => {
 
 let colloectheaderData= fs.readFileSync("html/header.html", "utf-8")
 
-
+  
 /////
 let file = "/home";
 {
